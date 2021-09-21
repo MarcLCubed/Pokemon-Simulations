@@ -112,7 +112,7 @@ def project_into_pdf(x):
     this is used for projected gradient decent
     '''
     p = x - (np.sum(x) - 1)/x.size
-    dp = np.sum(np.fmin(0,p))/np.sum(p>0)
+    dp = 0
     while (np.sum(np.fmin(dp,p))**2>1e-16):
         dp -= np.sum(np.fmin(dp,p))/np.count_nonzero(p>dp)
     return np.fmax(p-dp,0)
