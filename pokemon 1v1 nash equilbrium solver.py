@@ -118,7 +118,7 @@ def project_into_pdf(x):
     return np.fmax(p-dp,0)
 
 #@njit(parallel = True)
-def counter(pop,n_iter=1):
+def counter(pop,n_iter=1,init=0):
     '''
     calculates, a counter to the population input by pop
     this isnt necciarily the best counter population, but it is at least a
