@@ -114,17 +114,22 @@ def project_into_pdf(x):
     p = x - (np.sum(x) - 1)/x.size
     dp = np.sum(np.fmin(0,p))/np.sum(p>0)
     while (np.sum(np.fmin(dp,p))**2>1e-16):
-        dp -= np.sum(np.fmin(dp,p))/np.sum(p>dp)
-    return p-np.fmin(p,dp)
+        dp -= np.sum(np.fmin(dp,p))/np.count_nonzero(p>dp)
+    return np.fmax(p-dp,0)
 
 #@njit(parallel = True)
-def counter(pop):
+def counter(pop,n_iter=1):
     '''
     calculates, a counter to the population input by pop
     this isnt necciarily the best counter population, but it is at least a
     good enough one
     '''
-    return project_into_pdf(pop@payout_matrix*100+pop)
+    grad = pop@payout_matrix
+    stepsize = grad.size/np.sqrt(np.sum(grad**2))
+    counter_pop = project_into_pdf(grad*stepsize+init)
+    for i in range(n_iter):
+        counter_pop = project_into_pdf(grad*stepsize+counter_pop)
+    return counter_pop
 
 #@njit(parallel = True)
 def update_pop(pop,counter_pop,grad1,r=0.9):  
